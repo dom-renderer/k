@@ -29,11 +29,13 @@ Route::resource('sectors', SectorController::class);
 Route::resource('equipment', EquipmentController::class);
 
 // Coating Cases & Files Routes
+Route::get('/cases/generate-oa', [CoatingCaseController::class, 'generateOaNumber'])->name('cases.generate-oa');
 Route::get('/cases/check-oa', [CoatingCaseController::class, 'checkOaNumber'])->name('cases.check-oa');
 Route::post('/cases/upload-file', [CoatingCaseController::class, 'uploadFile'])->name('cases.upload-file');
 Route::delete('/cases/file/{file}', [CoatingCaseController::class, 'deleteFile'])->name('cases.delete-file');
 Route::get('/cases/file/{file}/download', [CoatingCaseController::class, 'downloadFile'])->name('cases.download-file');
 Route::post('/cases/{case}/review-level', [CoatingCaseController::class, 'reviewLevel'])->name('cases.review-level');
+Route::post('/cases/{case}/reopen', [CoatingCaseController::class, 'reopen'])->name('cases.reopen');
 Route::resource('cases', CoatingCaseController::class);
 
 // Activity Logs Route

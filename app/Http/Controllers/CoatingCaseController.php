@@ -111,6 +111,23 @@ class CoatingCaseController extends Controller
     }
 
     /**
+     * Generate a unique OA Number (AJAX endpoint).
+     */
+    public function generateOaNumber()
+    {
+        abort_if(!auth()->user()->can('case-create') && !auth()->user()->can('case-edit'), 403, 'Unauthorized action.');
+
+        do {
+            $number = 'OA-' . str_pad(mt_rand(100000, 999999), 6, '0', STR_PAD_LEFT);
+        } while (CoatingCase::where('oa_number', $number)->exists());
+
+        return response()->json([
+            'success' => true,
+            'oa_number' => $number,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new coating case.
      */
     public function create()
@@ -375,6 +392,46 @@ class CoatingCaseController extends Controller
         ]);
 
         return redirect()->route('cases.show', $case->id)->with('success', 'Level ' . $currentLevel . ' review recorded successfully.');
+    }
+
+    /**
+     * Reopen a closed coating case and set to target level.
+     */
+    public function reopen(Request $request, CoatingCase $case)
+    {
+        abort_if(!auth()->user()->can('case-approve') && !auth()->user()->can('case-edit'), 403, 'Unauthorized action.');
+        abort_if(!$case->is_closed, 400, 'Only closed cases can be reopened.');
+
+        $validated = $request->validate([
+            'target_level' => ['required', 'integer', 'in:1,2,3'],
+            'remarks' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $targetLevel = (int) $validated['target_level'];
+        $remarks = $validated['remarks'] ?? 'Reopened closed case and set to Level ' . $targetLevel . '.';
+
+        $case->update([
+            'current_level' => $targetLevel,
+            'status' => 'level_' . $targetLevel . '_pending',
+            'closed_at' => null,
+            'closed_by' => null,
+        ]);
+
+        CoatingCaseLevelLog::create([
+            'coating_case_id' => $case->id,
+            'level' => $targetLevel,
+            'action' => 'reopened',
+            'reset_to_level' => $targetLevel,
+            'remarks' => $remarks,
+            'user_id' => auth()->id(),
+        ]);
+
+        ActivityLogger::log('reopened', 'Coating Cases', 'Reopened case ' . $case->oa_number . ' and reset to Level ' . $targetLevel . '.', $case, [
+            'target_level' => $targetLevel,
+            'remarks' => $remarks,
+        ]);
+
+        return redirect()->route('cases.show', $case->id)->with('success', 'Coating Case reopened successfully and set to Level ' . $targetLevel . '.');
     }
 
     /**

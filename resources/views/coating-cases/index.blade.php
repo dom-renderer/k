@@ -38,8 +38,8 @@
               <div class="row g-3">
                 <div class="col-md-3">
                   <label for="filter_sector_id" class="form-label fw-semibold small">Sector</label>
-                  <select class="form-select form-select-sm" id="filter_sector_id" name="sector_id">
-                    <option value="">All Sectors</option>
+                  <select class="form-select select2-filter" id="filter_sector_id" name="sector_id" data-placeholder="All Sectors">
+                    <option value=""></option>
                     @foreach($sectors as $sector)
                       <option value="{{ $sector->id }}">{{ $sector->title }}</option>
                     @endforeach
@@ -48,8 +48,8 @@
 
                 <div class="col-md-3">
                   <label for="filter_equipment_id" class="form-label fw-semibold small">Equipment</label>
-                  <select class="form-select form-select-sm" id="filter_equipment_id" name="equipment_id">
-                    <option value="">All Equipment</option>
+                  <select class="form-select select2-filter" id="filter_equipment_id" name="equipment_id" data-placeholder="All Equipment">
+                    <option value=""></option>
                     @foreach($equipments as $eq)
                       <option value="{{ $eq->id }}">{{ $eq->name }}</option>
                     @endforeach
@@ -125,6 +125,15 @@
 @push('scripts')
 <script>
   $(document).ready(function() {
+    $('.select2-filter').select2({
+      theme: 'bootstrap-5',
+      width: '100%',
+      placeholder: function() {
+        return $(this).data('placeholder');
+      },
+      allowClear: true
+    });
+
     var table = $('#casesTable').DataTable({
       processing: true,
       serverSide: true,
@@ -160,6 +169,7 @@
 
     $('#resetCaseFilterBtn').on('click', function() {
       $('#caseFilterForm')[0].reset();
+      $('.select2-filter').val(null).trigger('change');
       table.ajax.reload();
     });
 

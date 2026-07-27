@@ -181,11 +181,18 @@
         </div>
 
         @if($case->is_closed)
-          <div class="alert alert-success d-flex align-items-center mb-0">
-            <i class="ti ti-circle-check fs-3 me-3"></i>
-            <div>
-              <strong>Case Closed & Locked!</strong> Final approval granted on {{ $case->closed_at ? $case->closed_at->format('M d, Y h:i A') : '' }} by {{ $case->closer->name ?? 'Admin' }}. No further edits can be made to this case.
+          <div class="alert alert-success d-flex justify-content-between align-items-center mb-0">
+            <div class="d-flex align-items-center">
+              <i class="ti ti-circle-check fs-3 me-3"></i>
+              <div>
+                <strong>Case Closed & Locked!</strong> Final approval granted on {{ $case->closed_at ? $case->closed_at->format('M d, Y h:i A') : '' }} by {{ $case->closer->name ?? 'Admin' }}.
+              </div>
             </div>
+            @can('case-approve')
+              <button type="button" class="btn btn-warning btn-sm ms-3 text-nowrap fw-semibold text-dark" data-bs-toggle="modal" data-bs-target="#reopenModal">
+                <i class="ti ti-rotate-clockwise me-1"></i> Reopen Case
+              </button>
+            @endcan
           </div>
         @endif
       </div>
@@ -304,6 +311,8 @@
                           <span class="badge bg-success"><i class="ti ti-check me-1"></i>Approved</span>
                         @elseif($log->action === 'rejected')
                           <span class="badge bg-danger"><i class="ti ti-x me-1"></i>Rejected (Reset to Level {{ $log->reset_to_level }})</span>
+                        @elseif($log->action === 'reopened')
+                          <span class="badge bg-warning text-dark"><i class="ti ti-rotate-clockwise me-1"></i>Reopened (Set to Level {{ $log->level }})</span>
                         @else
                           <span class="badge bg-info"><i class="ti ti-send me-1"></i>Submitted</span>
                         @endif
@@ -339,7 +348,7 @@
                 </p>
 
                 <!-- Approval Form -->
-                <form action="{{ route('cases.review-level', $case->id) }}" method="POST" class="mb-3">
+                <form action="{{ route('cases.review-level', $case->id) }}" method="POST" class="mb-3" id="approveLevelForm">
                   @csrf
                   <input type="hidden" name="action" value="approve">
                   
@@ -348,7 +357,7 @@
                     <textarea class="form-control form-control-sm" id="approve_remarks" name="remarks" rows="2" placeholder="e.g. All photos verified and meet specifications..."></textarea>
                   </div>
 
-                  <button type="submit" class="btn btn-success w-100 py-2">
+                  <button type="button" class="btn btn-success w-100 py-2" id="approveLevelBtn">
                     <i class="ti ti-check me-1"></i> Approve Level {{ $case->current_level }} {{ $case->current_level == 3 ? '& Close Case' : '' }}
                   </button>
                 </form>
@@ -358,6 +367,21 @@
                 <!-- Reject Button (Triggers Modal) -->
                 <button type="button" class="btn btn-outline-danger w-100 py-2" data-bs-toggle="modal" data-bs-target="#rejectModal">
                   <i class="ti ti-x me-1"></i> Reject Level {{ $case->current_level }}
+                </button>
+              </div>
+            </div>
+          @else
+            <div class="card border-warning shadow-sm mb-4">
+              <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="ti ti-rotate-clockwise me-2"></i> Reopen Coating Case</span>
+                <span class="badge bg-dark text-white">Closed</span>
+              </div>
+              <div class="card-body p-4">
+                <p class="small text-muted mb-3">
+                  This coating case is closed. Reopening it will restore active status and allow you to select which level to reset it to for further changes.
+                </p>
+                <button type="button" class="btn btn-warning w-100 py-2 fw-semibold text-dark" data-bs-toggle="modal" data-bs-target="#reopenModal">
+                  <i class="ti ti-rotate-clockwise me-1"></i> Reopen & Set Level
                 </button>
               </div>
             </div>
@@ -442,6 +466,48 @@
 </div>
 @endif
 
+<!-- Reopen Modal -->
+@if($case->is_closed)
+<div class="modal fade" id="reopenModal" tabindex="-1" aria-labelledby="reopenModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ route('cases.reopen', $case->id) }}" method="POST" id="reopenCaseForm">
+        @csrf
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title text-dark fw-bold" id="reopenModalLabel"><i class="ti ti-rotate-clockwise me-2"></i> Reopen Coating Case</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p class="text-muted small mb-3">
+            Select which level this coating case should be set back to for further changes, file uploads, or reviews.
+          </p>
+
+          <div class="mb-3">
+            <label for="target_level" class="form-label fw-semibold">Set Coating Case To Level <span class="text-danger">*</span></label>
+            <select class="form-select" id="target_level" name="target_level" required>
+              <option value="1">Level 1: Pre-Coating (Photos & Specs)</option>
+              <option value="2">Level 2: Coating Application (In-Progress Docs)</option>
+              <option value="3">Level 3: After-Coating Review (Closure Approval)</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="reopen_remarks" class="form-label fw-semibold">Reopen Reason / Remarks (Optional)</label>
+            <textarea class="form-control" id="reopen_remarks" name="remarks" rows="3" placeholder="Explain why the coating case is being reopened..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-warning fw-semibold text-dark">
+            <i class="ti ti-rotate-clockwise me-1"></i> Confirm Reopen Case
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endif
+
 <!-- Image Modal Preview -->
 <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -464,6 +530,54 @@
   Dropzone.autoDiscover = false;
 
   $(document).ready(function() {
+    // Approval Confirmation SweetAlert
+    $('#approveLevelBtn').on('click', function(e) {
+      e.preventDefault();
+      var currentLevel = "{{ $case->current_level }}";
+      var isFinal = currentLevel == 3;
+      var titleText = isFinal ? 'Approve Level 3 & Close Case?' : 'Approve Level ' + currentLevel + '?';
+      var bodyText = isFinal 
+        ? 'Are you sure you want to approve Level 3 and grant final closure for this coating case?' 
+        : 'Are you sure you want to approve Level ' + currentLevel + ' and advance to Level ' + (parseInt(currentLevel) + 1) + '?';
+
+      Swal.fire({
+        title: titleText,
+        text: bodyText,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: isFinal ? '<i class="ti ti-check me-1"></i> Yes, Approve & Close Case' : '<i class="ti ti-check me-1"></i> Yes, Approve Level ' + currentLevel,
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $('#approveLevelForm').submit();
+        }
+      });
+    });
+
+    // Reopen Confirmation SweetAlert
+    $('#reopenCaseForm').on('submit', function(e) {
+      e.preventDefault();
+      var form = this;
+      var targetLevel = $('#target_level').val();
+
+      Swal.fire({
+        title: 'Reopen Coating Case?',
+        text: 'Are you sure you want to reopen this case and set its status back to Level ' + targetLevel + '?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f59e0b',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="ti ti-rotate-clockwise me-1"></i> Yes, Reopen Case',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+
     // Image Preview Modal Handler
     $('.preview-btn').on('click', function() {
       var url = $(this).data('url');

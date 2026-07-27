@@ -61,17 +61,22 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label for="oa_number" class="form-label fw-semibold">OA Number <span class="text-danger">*</span></label>
-              <input type="text" class="form-control @error('oa_number') is-invalid @enderror" id="oa_number" name="oa_number" value="{{ old('oa_number') }}" required placeholder="e.g. OA-994821">
+              <div class="input-group">
+                <input type="text" class="form-control @error('oa_number') is-invalid @enderror" id="oa_number" name="oa_number" value="{{ old('oa_number') }}" required placeholder="e.g. OA-994821">
+                <button type="button" class="btn btn-outline-primary" id="generateOaBtn" title="Generate New Unique OA Number">
+                  <i class="ti ti-refresh me-1"></i> Generate
+                </button>
+              </div>
               <div id="oaFeedback" class="oa-status-badge"></div>
               @error('oa_number')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
               @enderror
             </div>
 
             <div class="col-md-6">
               <label for="sector_id" class="form-label fw-semibold">Sector <span class="text-danger">*</span></label>
-              <select class="form-select select2 @error('sector_id') is-invalid @enderror" id="sector_id" name="sector_id" required>
-                <option value="">-- Select Sector --</option>
+              <select class="form-select select2 @error('sector_id') is-invalid @enderror" id="sector_id" name="sector_id" required data-placeholder="-- Select Sector --">
+                <option value=""></option>
                 @foreach ($sectors as $sector)
                   <option value="{{ $sector->id }}" {{ old('sector_id') == $sector->id ? 'selected' : '' }}>
                     {{ $sector->title }}
@@ -85,8 +90,8 @@
 
             <div class="col-md-6">
               <label for="equipment_id" class="form-label fw-semibold">Equipment <span class="text-danger">*</span></label>
-              <select class="form-select select2 @error('equipment_id') is-invalid @enderror" id="equipment_id" name="equipment_id" required>
-                <option value="">-- Select Equipment --</option>
+              <select class="form-select select2 @error('equipment_id') is-invalid @enderror" id="equipment_id" name="equipment_id" required data-placeholder="-- Select Equipment --">
+                <option value=""></option>
                 @foreach ($equipments as $eq)
                   <option value="{{ $eq->id }}" {{ old('equipment_id') == $eq->id ? 'selected' : '' }}>
                     {{ $eq->name }} {{ $eq->sku ? '('.$eq->sku.')' : '' }}
@@ -145,11 +150,42 @@
 
   $(document).ready(function() {
     $('.select2').select2({
-      theme: 'bootstrap-5'
+      theme: 'bootstrap-5',
+      width: '100%',
+      placeholder: function() {
+        return $(this).data('placeholder') || '-- Select Option --';
+      },
+      allowClear: true
+    }).on('change', function() {
+      if ($(this).valid) {
+        $(this).valid();
+      }
     });
 
     var uploadedFiles = [];
     var isOaDuplicate = false;
+
+    // Generate Unique OA Number Action
+    $('#generateOaBtn').on('click', function() {
+      var $btn = $(this);
+      $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...');
+      
+      $.ajax({
+        url: "{{ route('cases.generate-oa') }}",
+        type: 'GET',
+        success: function(response) {
+          if (response.success) {
+            $('#oa_number').val(response.oa_number).trigger('input');
+          }
+        },
+        error: function() {
+          Swal.fire('Error', 'Could not generate unique OA Number.', 'error');
+        },
+        complete: function() {
+          $btn.prop('disabled', false).html('<i class="ti ti-refresh me-1"></i> Generate');
+        }
+      });
+    });
 
     // Instant OA Number Duplicate Check
     $('#oa_number').on('input blur', function() {
