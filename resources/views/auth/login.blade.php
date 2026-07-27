@@ -1,14 +1,22 @@
 @extends('layouts.auth')
 
-@section('title', 'Signin - InApp Inventory Dashboard')
+@section('title', 'Signin - ' . \App\Models\Setting::get('app_title', 'InApp Inventory Dashboard'))
 
 @section('content')
+@php
+  $appLogo = \App\Models\Setting::get('app_logo');
+@endphp
+
 <div class="card" style="max-width:420px; width:100%;">
   <div class="card-body p-5">
     <div class="text-center mb-3">
       <a href="{{ route('dashboard') }}" class="mb-4 d-inline-block">
-        <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
-        <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+        @if ($appLogo)
+          <img src="{{ $appLogo }}" alt="Logo" style="max-height: 48px; max-width: 180px; object-fit: contain;">
+        @else
+          <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
+          <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+        @endif
       </a>
       <h1 class="card-title mb-5 h5">Sign in to your account</h1>
     </div>

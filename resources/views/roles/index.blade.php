@@ -10,9 +10,11 @@
         <h1 class="fs-3 mb-1">Roles & Permissions</h1>
         <p class="mb-0">Manage system roles, permissions, and access controls</p>
       </div>
+      @can('role-create')
       <div>
         <a href="{{ route('roles.create') }}" class="btn btn-primary">Add Role</a>
       </div>
+      @endcan
     </div>
   </div>
 </div>

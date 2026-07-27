@@ -32,6 +32,22 @@ class PermissionSeeder extends Seeder
                 'role-edit',
                 'role-delete',
             ],
+            'Sector Management' => [
+                'sector-list',
+                'sector-create',
+                'sector-edit',
+                'sector-delete',
+            ],
+            'Equipment Management' => [
+                'equipment-list',
+                'equipment-create',
+                'equipment-edit',
+                'equipment-delete',
+            ],
+            'Setting Management' => [
+                'setting-list',
+                'setting-edit',
+            ],
             'Inventory Management' => [
                 'inventory-list',
                 'inventory-create',
@@ -55,7 +71,7 @@ class PermissionSeeder extends Seeder
         $adminRole->syncPermissions(Permission::all());
 
         $userRole = Role::firstOrCreate(['name' => 'user']);
-        $userRole->syncPermissions(['user-list', 'inventory-list', 'report-list']);
+        $userRole->syncPermissions(['user-list', 'sector-list', 'equipment-list', 'inventory-list', 'report-list']);
 
         // Assign Admin role to default admin user
         $adminUser = User::where('username', 'admin')->first();

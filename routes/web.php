@@ -9,6 +9,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\SettingController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -20,6 +23,11 @@ Route::get('/reports', [ReportController::class, 'index'])->name('reports.index'
 
 Route::resource('users', UserController::class);
 Route::resource('roles', RoleController::class);
+Route::resource('sectors', SectorController::class);
+Route::resource('equipment', EquipmentController::class);
+
+Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login.submit');

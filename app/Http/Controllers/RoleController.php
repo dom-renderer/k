@@ -14,6 +14,8 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(!auth()->user()->can('role-list'), 403, 'Unauthorized action.');
+
         if ($request->ajax()) {
             $roles = Role::withCount(['permissions', 'users']);
 
@@ -34,11 +36,14 @@ class RoleController extends Controller
                     return '<span class="badge bg-info">' . ($role->users_count ?? 0) . ' Users</span>';
                 })
                 ->addColumn('actions', function ($role) {
-                    $actionsHtml = '<a href="' . route('roles.edit', $role->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>';
-                    if ($role->name !== 'admin') {
+                    $actionsHtml = '';
+                    if (auth()->user()->can('role-edit')) {
+                        $actionsHtml .= '<a href="' . route('roles.edit', $role->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>';
+                    }
+                    if (auth()->user()->can('role-delete') && $role->name !== 'admin') {
                         $actionsHtml .= ' <a href="javascript:void(0)" class="link-danger delete-role-btn ms-2" data-id="' . $role->id . '" data-name="' . e($role->name) . '"><i class="ti ti-trash fs-5"></i></a>';
                     }
-                    return $actionsHtml;
+                    return $actionsHtml ?: '<span class="text-muted small">None</span>';
                 })
                 ->rawColumns(['name', 'permissions_count', 'users_count', 'actions'])
                 ->make(true);
@@ -52,6 +57,8 @@ class RoleController extends Controller
      */
     public function create()
     {
+        abort_if(!auth()->user()->can('role-create'), 403, 'Unauthorized action.');
+
         $groupedPermissions = $this->getGroupedPermissions();
         return view('roles.create', compact('groupedPermissions'));
     }
@@ -61,6 +68,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        abort_if(!auth()->user()->can('role-create'), 403, 'Unauthorized action.');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
             'permissions' => ['required', 'array'],
@@ -78,6 +87,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        abort_if(!auth()->user()->can('role-edit'), 403, 'Unauthorized action.');
+
         $groupedPermissions = $this->getGroupedPermissions();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
         return view('roles.edit', compact('role', 'groupedPermissions', 'rolePermissions'));
@@ -88,6 +99,8 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
+        abort_if(!auth()->user()->can('role-edit'), 403, 'Unauthorized action.');
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:roles,name,' . $role->id],
             'permissions' => ['required', 'array'],
@@ -105,6 +118,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        abort_if(!auth()->user()->can('role-delete'), 403, 'Unauthorized action.');
+
         if ($role->name === 'admin') {
             return response()->json([
                 'success' => false,
@@ -128,6 +143,9 @@ class RoleController extends Controller
         $groups = [
             'User Management' => ['user-list', 'user-create', 'user-edit', 'user-delete'],
             'Role Management' => ['role-list', 'role-create', 'role-edit', 'role-delete'],
+            'Sector Management' => ['sector-list', 'sector-create', 'sector-edit', 'sector-delete'],
+            'Equipment Management' => ['equipment-list', 'equipment-create', 'equipment-edit', 'equipment-delete'],
+            'Setting Management' => ['setting-list', 'setting-edit'],
             'Inventory Management' => ['inventory-list', 'inventory-create', 'inventory-edit', 'inventory-delete'],
             'Reports' => ['report-list', 'report-export'],
         ];

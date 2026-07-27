@@ -1,14 +1,21 @@
 @extends('layouts.auth')
 
-@section('title', '404 Error - InApp Inventory Dashboard')
+@section('title', '404 Error - ' . \App\Models\Setting::get('app_title', 'InApp Inventory Dashboard'))
 
 @section('content')
+@php
+  $appLogo = \App\Models\Setting::get('app_logo');
+@endphp
 <div class="card border-0 bg-transparent" style="max-width: 500px; width: 100%;">
   <div class="card-body text-center">
     <div class="mb-4">
       <a href="{{ route('dashboard') }}" class="d-inline-block mb-4">
-        <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
-        <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+        @if ($appLogo)
+          <img src="{{ $appLogo }}" alt="Logo" style="max-height: 48px; max-width: 180px; object-fit: contain;">
+        @else
+          <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="" width="36">
+          <span class="ms-2"><img src="{{ asset('assets/images/logo.svg') }}" alt=""></span>
+        @endif
       </a>
     </div>
 

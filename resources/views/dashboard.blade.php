@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'InApp Inventory Dashboard')
+@section('title', 'Dashboard - ' . \App\Models\Setting::get('app_title', 'InApp Inventory Dashboard'))
 
 @section('content')
 <div class="row">

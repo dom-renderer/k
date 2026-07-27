@@ -12,10 +12,12 @@ use Yajra\DataTables\Facades\DataTables;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the users or handle DataTables AJAX request using Yajra DataTables.
+     * Display a listing of the users or handle DataTables AJAX request.
      */
     public function index(Request $request)
     {
+        abort_if(!auth()->user()->can('user-list'), 403, 'Unauthorized action.');
+
         if ($request->ajax()) {
             $query = User::with('roles')->select('users.*');
 
@@ -30,8 +32,14 @@ class UserController extends Controller
                     })->implode(' ');
                 })
                 ->addColumn('actions', function ($user) {
-                    return '<a href="' . route('users.edit', $user->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>
-                        <a href="javascript:void(0)" class="link-danger delete-user-btn ms-2" data-id="' . $user->id . '" data-name="' . e($user->name) . '"><i class="ti ti-trash fs-5"></i></a>';
+                    $html = '';
+                    if (auth()->user()->can('user-edit')) {
+                        $html .= '<a href="' . route('users.edit', $user->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>';
+                    }
+                    if (auth()->user()->can('user-delete') && auth()->id() !== $user->id) {
+                        $html .= ' <a href="javascript:void(0)" class="link-danger delete-user-btn ms-2" data-id="' . $user->id . '" data-name="' . e($user->name) . '"><i class="ti ti-trash fs-5"></i></a>';
+                    }
+                    return $html ?: '<span class="text-muted small">None</span>';
                 })
                 ->rawColumns(['name', 'roles', 'actions'])
                 ->make(true);
@@ -45,6 +53,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        abort_if(!auth()->user()->can('user-create'), 403, 'Unauthorized action.');
+
         $roles = Role::all();
         return view('users.create', compact('roles'));
     }
@@ -54,6 +64,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        abort_if(!auth()->user()->can('user-create'), 403, 'Unauthorized action.');
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -86,6 +98,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        abort_if(!auth()->user()->can('user-edit'), 403, 'Unauthorized action.');
+
         $roles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
         return view('users.edit', compact('user', 'roles', 'userRoles'));
@@ -96,6 +110,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        abort_if(!auth()->user()->can('user-edit'), 403, 'Unauthorized action.');
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -133,6 +149,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        abort_if(!auth()->user()->can('user-delete'), 403, 'Unauthorized action.');
+
         if (auth()->id() === $user->id) {
             return response()->json([
                 'success' => false,

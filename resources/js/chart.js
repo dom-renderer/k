@@ -1,10 +1,8 @@
-
-
-
-
 import ApexCharts from 'apexcharts';
 
 document.addEventListener('DOMContentLoaded', () => {
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#2563eb';
+
     if (document.getElementById('salesPurchaseChart')) {
          var options = {
       series: [
@@ -18,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
       ],
-      colors: ['#f7a085', '#E66239'],
+      colors: [primaryColor + '60', primaryColor],
       chart: {
         type: 'bar',
         height: 350,
@@ -97,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fill: {
         opacity: 1,
       },
-     tooltip: {
+      tooltip: {
     			y: {
     				formatter: function (val) {
     					return "$ " + val + " thousands"
@@ -117,7 +115,7 @@ chart.render();
         height: 200,
         type: 'radialBar',
       },
-      colors: ['#5BE49B', '#E66239'],
+      colors: ['#5BE49B', primaryColor],
       plotOptions: {
         radialBar: {
           dataLabels: {
@@ -173,7 +171,7 @@ chart.render();
         gradient: {
           shade: 'dark',
           type: 'vertical',
-          gradientToColors: ['#007867', '#FFD666', '#FFAC82'],
+          gradientToColors: ['#007867', '#FFD666', primaryColor],
           stops: [0, 100],
         },
       },
@@ -188,11 +186,9 @@ chart.render();
     chart.render();
   }
    if (document.getElementById('salesChart')) {
-   // --- Replace these arrays with your real monthly sales numbers (12 values each) ---
     const salesThisYear = [42000, 53000, 48000, 61000, 72000, 69000, 74000, 82000, 78000, 86000, 91000, 97000];
     const salesLastYear = [38000, 45000, 47000, 56000, 65000, 63000, 68000, 70000, 69000, 75000, 80000, 84000];
 
-    // Categories for x-axis (months)
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     const options = {
@@ -205,7 +201,7 @@ chart.render();
           show: false,
         },
       },
-      colors: ['#E66239', '#198754'],
+      colors: [primaryColor, '#198754'],
       stroke: { width: [3, 2.5], curve: 'smooth' },
       markers: { size: 4, hover: { sizeOffset: 2 } },
       series: [
@@ -251,57 +247,42 @@ chart.render();
       ]
     };
 
-    // mount chart
     const chart = new ApexCharts(document.querySelector("#salesChart"), options);
     chart.render();
 
-    // helper: format currency with thousands separators (assumes INR — change locale/currency as needed)
     function formatCurrency(value) {
       if (value == null) return '-';
-      // ensure numeric
       const n = Number(value);
       return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
     }
 
-    // Example control: Randomize data (for demo)
-    document.getElementById('btn-random').addEventListener('click', () => {
-      const rand = () => Math.round((Math.random() * 80 + 20) * 1000); // 20k - 100k
-      const newThisYear = Array.from({length: 12}, rand);
-      const newLastYear = Array.from({length: 12}, rand);
-      chart.updateSeries([
-        { name: 'This Year', data: newThisYear },
-        { name: 'Last Year', data: newLastYear }
-      ]);
-    });
-
-    // Example control: Toggle to show only This Year
-    let showingBoth = true;
-    document.getElementById('btn-update').addEventListener('click', () => {
-      if (showingBoth) {
-        chart.updateSeries([{ name: 'This Year', data: salesThisYear }]);
-        document.getElementById('btn-update').textContent = 'Show Comparison';
-      } else {
+    if (document.getElementById('btn-random')) {
+      document.getElementById('btn-random').addEventListener('click', () => {
+        const rand = () => Math.round((Math.random() * 80 + 20) * 1000);
+        const newThisYear = Array.from({length: 12}, rand);
+        const newLastYear = Array.from({length: 12}, rand);
         chart.updateSeries([
-          { name: 'This Year', data: salesThisYear },
-          { name: 'Last Year', data: salesLastYear }
+          { name: 'This Year', data: newThisYear },
+          { name: 'Last Year', data: newLastYear }
         ]);
-        document.getElementById('btn-update').textContent = 'Show This Year Only';
-      }
-      showingBoth = !showingBoth;
-    });
+      });
+    }
 
-    // Public function: update chart with new monthly sales data
-    // call updateMonthlySales([arrayOf12], optionalCompareArrayOf12)
-    function updateMonthlySales(currentYearArray, compareYearArray = null) {
-      if (!Array.isArray(currentYearArray) || currentYearArray.length !== 12) {
-        console.warn('updateMonthlySales expects an array of 12 numbers for currentYearArray');
-        return;
-      }
-      const series = [{ name: 'This Year', data: currentYearArray }];
-      if (Array.isArray(compareYearArray) && compareYearArray.length === 12) {
-        series.push({ name: 'Last Year', data: compareYearArray });
-      }
-      chart.updateSeries(series);
+    if (document.getElementById('btn-update')) {
+      let showingBoth = true;
+      document.getElementById('btn-update').addEventListener('click', () => {
+        if (showingBoth) {
+          chart.updateSeries([{ name: 'This Year', data: salesThisYear }]);
+          document.getElementById('btn-update').textContent = 'Show Comparison';
+        } else {
+          chart.updateSeries([
+            { name: 'This Year', data: salesThisYear },
+            { name: 'Last Year', data: salesLastYear }
+          ]);
+          document.getElementById('btn-update').textContent = 'Show This Year Only';
+        }
+        showingBoth = !showingBoth;
+      });
     }
   }
 });

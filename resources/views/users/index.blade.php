@@ -10,9 +10,11 @@
         <h1 class="fs-3 mb-1">Users</h1>
         <p class="mb-0">Manage system users and authorization</p>
       </div>
+      @can('user-create')
       <div>
         <a href="{{ route('users.create') }}" class="btn btn-primary">Add User</a>
       </div>
+      @endcan
     </div>
   </div>
 </div>
