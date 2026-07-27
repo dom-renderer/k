@@ -148,6 +148,7 @@ class RoleController extends Controller
             'Role Management' => ['role-list', 'role-create', 'role-edit', 'role-delete'],
             'Activity Log Management' => ['activity-log-list'],
             'Setting Management' => ['setting-list', 'setting-edit'],
+            'User Guide & Documentation' => ['doc-list'],
         ];
 
         $allPermissions = Permission::all()->keyBy('name');

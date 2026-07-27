@@ -77,6 +77,14 @@
     </li>
     @endcan
 
+    @can('doc-list')
+    <li>
+      <a class="nav-link {{ request()->routeIs('docs.index') ? 'active' : '' }}" href="{{ route('docs.index') }}">
+        <i class="ti ti-help-circle"></i><span class="nav-text">User Guide</span>
+      </a>
+    </li>
+    @endcan
+
     <li class="px-4 pt-4 pb-2"><small class="nav-text">Account</small></li>
     @auth
       <li>

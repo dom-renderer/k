@@ -59,6 +59,9 @@ class PermissionSeeder extends Seeder
                 'setting-list',
                 'setting-edit',
             ],
+            'User Guide & Documentation' => [
+                'doc-list',
+            ],
         ];
 
         // Delete obsolete permissions
@@ -85,6 +88,7 @@ class PermissionSeeder extends Seeder
             'case-create',
             'case-edit',
             'case-download',
+            'doc-list',
         ]);
 
         // Assign Admin role to default admin user
