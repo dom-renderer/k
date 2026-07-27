@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\UserTrackable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class Equipment extends Model
@@ -21,6 +22,14 @@ class Equipment extends Model
         'added_by',
         'updated_by',
     ];
+
+    /**
+     * Relationship to CoatingCases.
+     */
+    public function cases(): HasMany
+    {
+        return $this->hasMany(CoatingCase::class, 'equipment_id');
+    }
 
     /**
      * Get full public URL for the equipment photo.

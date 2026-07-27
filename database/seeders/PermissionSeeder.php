@@ -20,17 +20,13 @@ class PermissionSeeder extends Seeder
 
         // System permissions grouped by module
         $permissionGroups = [
-            'User Management' => [
-                'user-list',
-                'user-create',
-                'user-edit',
-                'user-delete',
-            ],
-            'Role Management' => [
-                'role-list',
-                'role-create',
-                'role-edit',
-                'role-delete',
+            'Coating Case Management' => [
+                'case-list',
+                'case-create',
+                'case-edit',
+                'case-delete',
+                'case-approve',
+                'case-download',
             ],
             'Sector Management' => [
                 'sector-list',
@@ -44,21 +40,32 @@ class PermissionSeeder extends Seeder
                 'equipment-edit',
                 'equipment-delete',
             ],
+            'User Management' => [
+                'user-list',
+                'user-create',
+                'user-edit',
+                'user-delete',
+            ],
+            'Role Management' => [
+                'role-list',
+                'role-create',
+                'role-edit',
+                'role-delete',
+            ],
+            'Activity Log Management' => [
+                'activity-log-list',
+            ],
             'Setting Management' => [
                 'setting-list',
                 'setting-edit',
             ],
-            'Inventory Management' => [
-                'inventory-list',
-                'inventory-create',
-                'inventory-edit',
-                'inventory-delete',
-            ],
-            'Reports' => [
-                'report-list',
-                'report-export',
-            ],
         ];
+
+        // Delete obsolete permissions
+        Permission::whereIn('name', [
+            'inventory-list', 'inventory-create', 'inventory-edit', 'inventory-delete',
+            'report-list', 'report-export'
+        ])->delete();
 
         foreach ($permissionGroups as $group => $permissions) {
             foreach ($permissions as $permissionName) {
@@ -71,7 +78,14 @@ class PermissionSeeder extends Seeder
         $adminRole->syncPermissions(Permission::all());
 
         $userRole = Role::firstOrCreate(['name' => 'user']);
-        $userRole->syncPermissions(['user-list', 'sector-list', 'equipment-list', 'inventory-list', 'report-list']);
+        $userRole->syncPermissions([
+            'sector-list',
+            'equipment-list',
+            'case-list',
+            'case-create',
+            'case-edit',
+            'case-download',
+        ]);
 
         // Assign Admin role to default admin user
         $adminUser = User::where('username', 'admin')->first();

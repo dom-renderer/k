@@ -5,416 +5,252 @@
 @section('content')
 <div class="row">
   <div class="col-12">
-    <div class="mb-6">
-      <h1 class="fs-3 mb-1">Dashboard</h1>
-      <p>Your main content goes here…</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="fs-3 mb-1">Coating Workflow Dashboard</h1>
+        <p class="text-muted mb-0">Overview of active coating work cases, approval stages, and recent activity.</p>
+      </div>
+      @can('case-create')
+        <a href="{{ route('cases.create') }}" class="btn btn-primary">
+          <i class="ti ti-plus me-1"></i> New Coating Case
+        </a>
+      @endcan
     </div>
   </div>
 </div>
-<div class="row g-3 mb-3">
-  <div class="col-lg-3 col-12">
-    <div class="card p-4 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-2">
-      <div class="d-flex gap-3">
-        <div class="icon-shape icon-md bg-primary text-white rounded-2">
-          <i class="ti ti-report-analytics fs-4"></i>
+
+<!-- Top KPI Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 h-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-shape icon-lg bg-primary text-white rounded-3 p-3 d-flex align-items-center justify-content-center">
+          <i class="ti ti-folders fs-2"></i>
         </div>
         <div>
-          <h2 class="mb-3 fs-6">Total Sales</h2>
-          <h3 class="fw-bold mb-0">$25,000</h3>
-          <p class="text-primary mb-0 small">+5% since last month</p>
+          <span class="text-muted fw-semibold small d-block mb-1">Total Cases</span>
+          <h2 class="fw-bold mb-0 text-dark">{{ number_format($stats['total_cases']) }}</h2>
+          <small class="text-primary fw-medium">{{ $stats['pending_cases'] }} active in workflow</small>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-12">
-    <div class="card p-4 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-2">
-      <div class="d-flex gap-3">
-        <div class="icon-shape icon-md bg-success text-white rounded-2">
-          <i class="ti ti-repeat fs-4"></i>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 h-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-shape icon-lg bg-warning text-white rounded-3 p-3 d-flex align-items-center justify-content-center">
+          <i class="ti ti-clock fs-2"></i>
         </div>
         <div>
-          <h2 class="mb-3 fs-6">Total Purchase</h2>
-          <h3 class="fw-bold mb-0">$18,000</h3>
-          <p class="text-success mb-0 small">+22% since last month</p>
+          <span class="text-muted fw-semibold small d-block mb-1">In-Progress Cases</span>
+          <h2 class="fw-bold mb-0 text-dark">{{ number_format($stats['pending_cases']) }}</h2>
+          <small class="text-warning fw-medium">Pending 3-level review</small>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-12">
-    <div class="card p-4 bg-info bg-opacity-10 border border-info border-opacity-25 rounded-2">
-      <div class="d-flex gap-3">
-        <div class="icon-shape icon-md bg-info text-white rounded-2">
-          <i class="ti ti-currency-dollar fs-4"></i>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 h-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-shape icon-lg bg-success text-white rounded-3 p-3 d-flex align-items-center justify-content-center">
+          <i class="ti ti-circle-check fs-2"></i>
         </div>
         <div>
-          <h2 class="mb-3 fs-6">Total Expenses</h2>
-          <h3 class="fw-bold mb-0">$9,000</h3>
-          <p class="text-info mb-0 small">+10% since last month</p>
+          <span class="text-muted fw-semibold small d-block mb-1">Closed & Approved</span>
+          <h2 class="fw-bold mb-0 text-dark">{{ number_format($stats['closed_cases']) }}</h2>
+          <small class="text-success fw-medium">Final approval granted</small>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-12">
-    <div class="card p-4 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-2">
-      <div class="d-flex gap-3">
-        <div class="icon-shape icon-md bg-warning text-white rounded-2">
-          <i class="ti ti-notes fs-4"></i>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-3 bg-info bg-opacity-10 border border-info border-opacity-25 rounded-3 h-100">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-shape icon-lg bg-info text-white rounded-3 p-3 d-flex align-items-center justify-content-center">
+          <i class="ti ti-files fs-2"></i>
         </div>
         <div>
-          <h2 class="mb-3 fs-6">Invoice Due</h2>
-          <h3 class="fw-bold mb-0">$25,000</h3>
-          <p class="text-warning mb-0 small">+35% since last month</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row g-3 mb-3">
-  <div class="col-lg-4 col-12">
-    <div class="card">
-      <div class="card-body p-4">
-        <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
-          <div>
-            <h3 class="fw-bold h4">$25,458</h3>
-            <span>Total Profit</span>
-          </div>
-          <div>
-            <i class="ti ti-layers-subtract fs-1 text-primary"></i>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center small">
-          <div class="text-muted"><span class="text-success">+35%</span> vs Last Month</div>
-          <div><a href="#" class="link-primary text-decoration-underline">View</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-4 col-12">
-    <div class="card">
-      <div class="card-body p-4">
-        <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
-          <div>
-            <h3 class="fw-bold h4">$45,458</h3>
-            <span>Total Payment Returns</span>
-          </div>
-          <div>
-            <i class="ti ti-credit-card fs-1 text-danger"></i>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center small">
-          <div class="text-muted"><span class="text-danger">-20%</span> vs Last Month</div>
-          <div><a href="#" class="link-primary text-decoration-underline">View</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-4 col-12">
-    <div class="card">
-      <div class="card-body p-4">
-        <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
-          <div>
-            <h3 class="fw-bold h4">$34,458</h3>
-            <span>Total Expenses</span>
-          </div>
-          <div>
-            <i class="ti ti-cash-banknote fs-1 text-warning"></i>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center small">
-          <div class="text-muted"><span class="text-warning">-20%</span> vs Last Month</div>
-          <div><a href="#" class="link-primary text-decoration-underline">View</a></div>
+          <span class="text-muted fw-semibold small d-block mb-1">Backed Up Files</span>
+          <h2 class="fw-bold mb-0 text-dark">{{ number_format($stats['total_files']) }}</h2>
+          <small class="text-info fw-medium">Photos & documents</small>
         </div>
       </div>
     </div>
   </div>
 </div>
-<div class="row g-3 mb-3">
-  <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center bg-transparent px-4 py-3">
-        <h3 class="h5 mb-0">Sales vs Purchase</h3>
-        <div>
-          <select class="form-select form-select-sm">
-            <option selected>This Year</option>
-            <option>This Month</option>
-            <option>This Week</option>
-          </select>
-        </div>
+
+<!-- Workflow Stages Distribution & Equipment Summary -->
+<div class="row g-3 mb-4">
+  <!-- Workflow Levels Breakdown -->
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="ti ti-git-merge me-2"></i> Active Workflow Level Distribution</span>
+        @can('case-list')
+          <a href="{{ route('cases.index') }}" class="small text-primary">View All Cases</a>
+        @endcan
       </div>
       <div class="card-body p-4">
-        <div id="salesPurchaseChart"></div>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center bg-transparent px-4 py-3">
-        <h3 class="h5 mb-0">Overall Information</h3>
-        <div>
-          <select class="form-select form-select-sm">
-            <option selected>Last 6 Months</option>
-            <option>This Month</option>
-            <option>This Week</option>
-          </select>
-        </div>
-      </div>
-      <div class="card-body p-4">
-        <h3 class="h6">Customers Overview</h3>
-        <div class="row align-items-center">
-          <div class="col-sm-6">
-            <div id="customerChart"></div>
-          </div>
-          <div class="col-sm-6">
-            <div class="row">
-              <div class="col-6 border-end">
-                <div class="text-center">
-                  <h2 class="mb-1">5.5K</h2>
-                  <p class="text-success mb-2">First Time</p>
-                  <span class="badge bg-success"><i class="ti ti-arrow-up-left me-1"></i>25%</span>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="text-center">
-                  <h2 class="mb-1">3.5K</h2>
-                  <p class="text-warning mb-2">Return</p>
-                  <span class="badge bg-success badge-xs d-inline-flex align-items-center"><i class="ti ti-arrow-up-left me-1"></i>21%</span>
-                </div>
-              </div>
+        <div class="row text-center g-3">
+          <div class="col-4">
+            <div class="p-3 border rounded bg-light">
+              <span class="badge bg-primary mb-2">Level 1</span>
+              <h3 class="fw-bold mb-1">{{ $stats['level_1_cases'] }}</h3>
+              <small class="text-muted">Pre-Coating</small>
             </div>
-          </div>
-        </div>
-        <div class="row text-center border-top mt-4 pt-4">
-          <div class="col-4 border-end">
-            <h3 class="fw-bold mb-2">6987</h3>
-            <small class="text-secondary">Suppliers</small>
-          </div>
-          <div class="col-4 border-end">
-            <h3 class="fw-bold mb-2">4896</h3>
-            <small class="text-secondary">Customers</small>
           </div>
           <div class="col-4">
-            <h3 class="fw-bold mb-2">487</h3>
-            <small class="text-secondary">Orders</small>
+            <div class="p-3 border rounded bg-light">
+              <span class="badge bg-warning text-dark mb-2">Level 2</span>
+              <h3 class="fw-bold mb-1">{{ $stats['level_2_cases'] }}</h3>
+              <small class="text-muted">In-Progress</small>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-3 border rounded bg-light">
+              <span class="badge bg-info text-white mb-2">Level 3</span>
+              <h3 class="fw-bold mb-1">{{ $stats['level_3_cases'] }}</h3>
+              <small class="text-muted">After-Coating</small>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="fw-bold mb-1">System Master Data Summary</h6>
+            <small class="text-muted">Configured sectors, equipment, and system users</small>
+          </div>
+          <div class="d-flex gap-3 text-center">
+            <div>
+              <div class="fw-bold text-dark fs-5">{{ $stats['total_sectors'] }}</div>
+              <small class="text-muted">Sectors</small>
+            </div>
+            <div>
+              <div class="fw-bold text-dark fs-5">{{ $stats['total_equipment'] }}</div>
+              <small class="text-muted">Equipment</small>
+            </div>
+            <div>
+              <div class="fw-bold text-dark fs-5">{{ $stats['total_users'] }}</div>
+              <small class="text-muted">Users</small>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Top Equipment Utilization -->
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-header bg-light fw-bold">
+        <i class="ti ti-tools me-2"></i> Equipment Utilization
+      </div>
+      <ul class="list-group list-group-flush">
+        @forelse($equipmentsSummary as $eq)
+          <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+            <div class="d-flex align-items-center gap-3">
+              @if($eq->photo_url)
+                <img src="{{ $eq->photo_url }}" class="rounded object-fit-cover" width="40" height="40" alt="">
+              @else
+                <div class="rounded bg-light text-primary d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                  <i class="ti ti-tools fs-5"></i>
+                </div>
+              @endif
+              <div>
+                <h6 class="mb-0 fw-semibold">{{ $eq->name }}</h6>
+                <small class="text-muted">{{ $eq->sku ? 'SKU: ' . $eq->sku : 'No SKU' }}</small>
+              </div>
+            </div>
+            <span class="badge bg-light-primary text-primary font-monospace">{{ $eq->cases_count }} Cases</span>
+          </li>
+        @empty
+          <li class="list-group-item text-center text-muted py-4">No equipment data available.</li>
+        @endforelse
+      </ul>
     </div>
   </div>
 </div>
+
+<!-- Recent Cases & Activity Logs -->
 <div class="row g-3">
-  <!-- CARD 1 — Top Selling Products -->
-  <div class="col-lg-4">
+  <!-- Recent Coating Cases -->
+  <div class="col-lg-7">
     <div class="card h-100">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center px-4 py-3">
-        <h4 class="mb-0 h5">Top Selling Products</h4>
-        <button class="btn btn-sm btn-outline-secondary">
-          <i class="ti ti-calendar"></i> Today
-        </button>
+      <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="ti ti-file-text me-2"></i> Recent Coating Cases</span>
+        @can('case-list')
+          <a href="{{ route('cases.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+        @endcan
       </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-2.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Wireless Earphones</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">$89 </small>
-              <small>•</small>
-              <small>1,250 Units</small>
-            </div>
-          </div>
-          <span class="badge bg-danger-subtle text-danger border border-danger">18%</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-1.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Gaming Joy Stick</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">$49 </small>
-              <small>•</small>
-              <small>5,420 Units</small>
-            </div>
-          </div>
-          <span class="badge bg-primary-subtle text-primary border border-primary">32%</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-3.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Smart Watch Pro</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">$98 </small>
-              <small>•</small>
-              <small>862 Units</small>
-            </div>
-          </div>
-          <span class="badge bg-info-subtle text-info border border-info">22%</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-4.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">USB-C Fast Charger</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">$35 </small>
-              <small>•</small>
-              <small>3,200 Units</small>
-            </div>
-          </div>
-          <span class="badge bg-success-subtle text-success border border-success">28%</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-5.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Portable Bluetooth Speaker</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">$65 </small>
-              <small>•</small>
-              <small>2,890 Units</small>
-            </div>
-          </div>
-          <span class="badge bg-warning-subtle text-warning border border-warning">25%</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- CARD 2 — Low Stock Products -->
-  <div class="col-lg-4">
-    <div class="card h-100">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center px-4 py-3">
-        <div class="d-flex align-items-center">
-          <h4 class="mb-0 h5">Low Stock Products</h4>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>OA Number</th>
+                <th>Sector</th>
+                <th>Equipment</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($recentCases as $case)
+                <tr>
+                  <td>
+                    <a href="{{ route('cases.show', $case->id) }}" class="fw-semibold text-primary font-monospace">
+                      {{ $case->oa_number }}
+                    </a>
+                  </td>
+                  <td class="small">{{ $case->sector->title ?? 'N/A' }}</td>
+                  <td class="small">{{ $case->equipment->name ?? 'N/A' }}</td>
+                  <td>{!! $case->status_badge !!}</td>
+                  <td class="text-end">
+                    <a href="{{ route('cases.show', $case->id) }}" class="btn btn-sm btn-icon btn-light" title="View Details">
+                      <i class="ti ti-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">No coating cases created yet.</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
         </div>
-        <a href="{{ route('inventory.index') }}" class="small text-primary text-decoration-underline">View All</a>
       </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-8.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Wireless Headphones</p>
-            <small>ID: #554433</small>
-          </div>
-          <div class="d-flex flex-column gap-0 align-items-center">
-            <span class="fw-semibold text-primary">06</span>
-            <small class="text-muted">In Stock</small>
-          </div>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-4.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">USB-C Cable Pack</p>
-            <small>ID: #887766</small>
-          </div>
-          <div class="d-flex flex-column gap-0 align-items-center">
-            <span class="fw-semibold text-primary">09</span>
-            <small class="text-muted">In Stock</small>
-          </div>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-10.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Phone Screen Protector</p>
-            <small>ID: #332211</small>
-          </div>
-          <div class="d-flex flex-column gap-0 align-items-center">
-            <span class="fw-semibold text-primary">03</span>
-            <small class="text-muted">In Stock</small>
-          </div>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-4.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Portable Charger 20000mAh</p>
-            <small>ID: #998877</small>
-          </div>
-          <div class="d-flex flex-column gap-0 align-items-center">
-            <span class="fw-semibold text-primary">07</span>
-            <small class="text-muted">In Stock</small>
-          </div>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-6.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Mechanical Keyboard RGB</p>
-            <small>ID: #665544</small>
-          </div>
-          <div class="d-flex flex-column gap-0 align-items-center">
-            <span class="fw-semibold text-primary">02</span>
-            <small class="text-muted">In Stock</small>
-          </div>
-        </li>
-      </ul>
     </div>
   </div>
 
-  <!-- CARD 3 — Recent Sales -->
-  <div class="col-lg-4">
+  <!-- Recent System Activity Audit Logs -->
+  <div class="col-lg-5">
     <div class="card h-100">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center px-4 py-3">
-        <h4 class="mb-0 h5">Recent Sales</h4>
-        <button class="btn btn-sm btn-outline-secondary">
-          <i class="ti ti-calendar-event"></i> Weekly
-        </button>
+      <div class="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
+        <span><i class="ti ti-history me-2"></i> Recent Activity Logs</span>
+        @can('activity-log-list')
+          <a href="{{ route('activity-logs.index') }}" class="small text-primary">View Audit Trail</a>
+        @endcan
       </div>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-7.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">MacBook Pro 16"</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">Computers </small>
-              <small>•</small>
-              <small>$2,499</small>
+        @forelse($recentLogs as $log)
+          <li class="list-group-item p-3">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <span class="fw-semibold small text-dark">{{ $log->user->name ?? 'System' }}</span>
+              <small class="text-muted fs-xs">{{ $log->created_at->diffForHumans() }}</small>
             </div>
-          </div>
-          <span class="badge bg-success-subtle text-success">Completed</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-9.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">AirPods Pro Max</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">Audio </small>
-              <small>•</small>
-              <small>$549</small>
-            </div>
-          </div>
-          <span class="badge bg-primary-subtle text-primary">Processing</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-8.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">iPad Air 11"</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">Tablets </small>
-              <small>•</small>
-              <small>$799</small>
-            </div>
-          </div>
-          <span class="badge bg-success-subtle text-success">Completed</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-3.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Apple Watch Ultra</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">Wearables </small>
-              <small>•</small>
-              <small>$799</small>
-            </div>
-          </div>
-          <span class="badge bg-warning-subtle text-warning">Pending</span>
-        </li>
-        <li class="list-group-item d-flex align-items-center gap-3">
-          <img src="{{ asset('assets/images/product-6.png') }}" class="rounded" width="48">
-          <div class="flex-grow-1">
-            <p class="mb-1">Magic Keyboard</p>
-            <div class="d-flex align-items-center gap-2 text-muted">
-              <small class="fw-semibold">Accessories </small>
-              <small>•</small>
-              <small>$299</small>
-            </div>
-          </div>
-          <span class="badge bg-danger-subtle text-danger">Cancelled</span>
-        </li>
+            <p class="small text-muted mb-0 text-truncate" title="{{ $log->description }}">
+              {{ $log->description }}
+            </p>
+          </li>
+        @empty
+          <li class="list-group-item text-center text-muted py-4">No activity logs recorded yet.</li>
+        @endforelse
       </ul>
     </div>
   </div>

@@ -21,6 +21,12 @@ class UserController extends Controller
         if ($request->ajax()) {
             $query = User::with('roles')->select('users.*');
 
+            if ($request->filled('role')) {
+                $query->whereHas('roles', function ($q) use ($request) {
+                    $q->where('name', $request->input('role'));
+                });
+            }
+
             return DataTables::of($query)
                 ->addColumn('name', function ($user) {
                     return '<a href="#!"><img src="' . e($user->avatar_url) . '" class="avatar avatar-md rounded-circle me-2" alt="" /><span class="ms-1 fw-semibold">' . e($user->name) . '</span></a>';
@@ -45,7 +51,9 @@ class UserController extends Controller
                 ->make(true);
         }
 
-        return view('users.index');
+        $roles = Role::all();
+
+        return view('users.index', compact('roles'));
     }
 
     /**

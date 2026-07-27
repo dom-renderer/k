@@ -141,13 +141,13 @@ class RoleController extends Controller
     protected function getGroupedPermissions()
     {
         $groups = [
-            'User Management' => ['user-list', 'user-create', 'user-edit', 'user-delete'],
-            'Role Management' => ['role-list', 'role-create', 'role-edit', 'role-delete'],
+            'Coating Case Management' => ['case-list', 'case-create', 'case-edit', 'case-delete', 'case-approve', 'case-download'],
             'Sector Management' => ['sector-list', 'sector-create', 'sector-edit', 'sector-delete'],
             'Equipment Management' => ['equipment-list', 'equipment-create', 'equipment-edit', 'equipment-delete'],
+            'User Management' => ['user-list', 'user-create', 'user-edit', 'user-delete'],
+            'Role Management' => ['role-list', 'role-create', 'role-edit', 'role-delete'],
+            'Activity Log Management' => ['activity-log-list'],
             'Setting Management' => ['setting-list', 'setting-edit'],
-            'Inventory Management' => ['inventory-list', 'inventory-create', 'inventory-edit', 'inventory-delete'],
-            'Reports' => ['report-list', 'report-export'],
         ];
 
         $allPermissions = Permission::all()->keyBy('name');

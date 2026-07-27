@@ -21,14 +21,6 @@
       </a>
     </li>
 
-    @can('inventory-list')
-    <li>
-      <a class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}" href="{{ route('inventory.index') }}">
-        <i class="ti ti-box-seam"></i><span class="nav-text">Inventory</span>
-      </a>
-    </li>
-    @endcan
-
     @can('user-list')
     <li>
       <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
@@ -56,23 +48,23 @@
     @can('equipment-list')
     <li>
       <a class="nav-link {{ request()->routeIs('equipment.*') ? 'active' : '' }}" href="{{ route('equipment.index') }}">
-        <i class="ti ti-tools"></i><span class="nav-text">Equipment</span>
+        <i class="ti ti-tools"></i><span class="nav-text">Equipments</span>
       </a>
     </li>
     @endcan
 
-    @can('inventory-create')
+    @can('case-list')
     <li>
-      <a class="nav-link {{ request()->routeIs('products.create') ? 'active' : '' }}" href="{{ route('products.create') }}">
-        <i class="ti ti-plus"></i><span class="nav-text">Add Product</span>
+      <a class="nav-link {{ request()->routeIs('cases.*') ? 'active' : '' }}" href="{{ route('cases.index') }}">
+        <i class="ti ti-folders"></i><span class="nav-text">Coating Cases</span>
       </a>
     </li>
     @endcan
 
-    @can('report-list')
+    @can('activity-log-list')
     <li>
-      <a class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}" href="{{ route('reports.index') }}">
-        <i class="ti ti-receipt"></i><span class="nav-text">Reports</span>
+      <a class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}" href="{{ route('activity-logs.index') }}">
+        <i class="ti ti-history"></i><span class="nav-text">Activity Logs</span>
       </a>
     </li>
     @endcan
@@ -84,17 +76,6 @@
       </a>
     </li>
     @endcan
-
-    <li>
-      <a class="nav-link {{ request()->routeIs('error.404') ? 'active' : '' }}" href="{{ route('error.404') }}">
-        <i class="ti ti-alert-circle"></i><span class="nav-text">404 Error</span>
-      </a>
-    </li>
-    <li>
-      <a class="nav-link {{ request()->routeIs('docs.index') ? 'active' : '' }}" href="{{ route('docs.index') }}">
-        <i class="ti ti-file-text"></i><span class="nav-text">Docs</span>
-      </a>
-    </li>
 
     <li class="px-4 pt-4 pb-2"><small class="nav-text">Account</small></li>
     @auth

@@ -11,6 +11,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\CoatingCaseController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SettingController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -25,6 +27,17 @@ Route::resource('users', UserController::class);
 Route::resource('roles', RoleController::class);
 Route::resource('sectors', SectorController::class);
 Route::resource('equipment', EquipmentController::class);
+
+// Coating Cases & Files Routes
+Route::get('/cases/check-oa', [CoatingCaseController::class, 'checkOaNumber'])->name('cases.check-oa');
+Route::post('/cases/upload-file', [CoatingCaseController::class, 'uploadFile'])->name('cases.upload-file');
+Route::delete('/cases/file/{file}', [CoatingCaseController::class, 'deleteFile'])->name('cases.delete-file');
+Route::get('/cases/file/{file}/download', [CoatingCaseController::class, 'downloadFile'])->name('cases.download-file');
+Route::post('/cases/{case}/review-level', [CoatingCaseController::class, 'reviewLevel'])->name('cases.review-level');
+Route::resource('cases', CoatingCaseController::class);
+
+// Activity Logs Route
+Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
 Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
 Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');

@@ -20,6 +20,22 @@ class EquipmentController extends Controller
         if ($request->ajax()) {
             $equipment = Equipment::with(['creator', 'updater']);
 
+            if ($request->input('has_photo') === 'yes') {
+                $equipment->whereNotNull('photo')->where('photo', '!=', '');
+            } elseif ($request->input('has_photo') === 'no') {
+                $equipment->where(function ($q) {
+                    $q->whereNull('photo')->orWhere('photo', '');
+                });
+            }
+
+            if ($request->input('sku_status') === 'has_sku') {
+                $equipment->whereNotNull('sku')->where('sku', '!=', '');
+            } elseif ($request->input('sku_status') === 'no_sku') {
+                $equipment->where(function ($q) {
+                    $q->whereNull('sku')->orWhere('sku', '');
+                });
+            }
+
             return DataTables::of($equipment)
                 ->addColumn('photo', function ($item) {
                     if ($item->photo_url) {

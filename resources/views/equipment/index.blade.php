@@ -24,6 +24,51 @@
       </div>
     @endif
 
+    <!-- Filter Accordion (Default Collapsed) -->
+    <div class="accordion mb-4" id="equipmentFilterAccordion">
+      <div class="accordion-item border shadow-sm">
+        <h2 class="accordion-header" id="headingEquipmentFilter">
+          <button class="accordion-button collapsed fw-semibold text-dark bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEquipmentFilter" aria-expanded="false" aria-controls="collapseEquipmentFilter">
+            <i class="ti ti-filter me-2 text-primary"></i> Filter Equipment
+          </button>
+        </h2>
+        <div id="collapseEquipmentFilter" class="accordion-collapse collapse" aria-labelledby="headingEquipmentFilter" data-bs-parent="#equipmentFilterAccordion">
+          <div class="accordion-body p-4 bg-white">
+            <form id="equipmentFilterForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="filter_has_photo" class="form-label fw-semibold small">Photo Status</label>
+                  <select class="form-select form-select-sm" id="filter_has_photo" name="has_photo">
+                    <option value="">All Equipment</option>
+                    <option value="yes">With Photo Uploaded</option>
+                    <option value="no">Without Photo</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="filter_sku_status" class="form-label fw-semibold small">SKU Status</label>
+                  <select class="form-select form-select-sm" id="filter_sku_status" name="sku_status">
+                    <option value="">All Equipment</option>
+                    <option value="has_sku">With SKU Code</option>
+                    <option value="no_sku">Without SKU Code</option>
+                  </select>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                  <button type="button" class="btn btn-sm btn-light" id="resetEquipmentFilterBtn">
+                    <i class="ti ti-rotate-clockwise me-1"></i> Reset
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary" id="applyEquipmentFilterBtn">
+                    <i class="ti ti-filter me-1"></i> Apply Filter
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-body p-4">
         <div class="table-responsive">
@@ -56,7 +101,13 @@
     var table = $('#equipmentTable').DataTable({
       processing: true,
       serverSide: true,
-      ajax: "{{ route('equipment.index') }}",
+      ajax: {
+        url: "{{ route('equipment.index') }}",
+        data: function(d) {
+          d.has_photo = $('#filter_has_photo').val();
+          d.sku_status = $('#filter_sku_status').val();
+        }
+      },
       columns: [
         { data: 'photo', name: 'photo', orderable: false, searchable: false },
         { data: 'name', name: 'name' },
@@ -71,6 +122,15 @@
         searchPlaceholder: "Search equipment or SKU...",
         search: ""
       }
+    });
+
+    $('#applyEquipmentFilterBtn').on('click', function() {
+      table.ajax.reload();
+    });
+
+    $('#resetEquipmentFilterBtn').on('click', function() {
+      $('#equipmentFilterForm')[0].reset();
+      table.ajax.reload();
     });
 
     $(document).on('click', '.delete-equipment-btn', function() {

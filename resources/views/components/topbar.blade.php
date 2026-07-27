@@ -1,4 +1,8 @@
 <!-- TOPBAR COMPONENT -->
+@php
+  $user = auth()->user();
+  $userAvatar = ($user && $user->profile_picture_url) ? $user->profile_picture_url : asset('assets/images/avatar/avatar-1.jpg');
+@endphp
 <nav id="topbar" class="navbar bg-white border-bottom fixed-top topbar px-3">
   <button id="toggleBtn" class="d-none d-lg-inline-flex btn btn-light btn-icon btn-sm">
     <i class="ti ti-layout-sidebar-left-expand"></i>
@@ -8,88 +12,44 @@
   <button id="mobileBtn" class="btn btn-light btn-icon btn-sm d-lg-none me-2">
     <i class="ti ti-layout-sidebar-left-expand"></i>
   </button>
-  <div>
-    <!-- Navbar nav -->
-    <ul class="list-unstyled d-flex align-items-center mb-0 gap-1">
-      <!-- Bell icon -->
-      <li>
-        <a class="position-relative btn-icon btn-sm btn-light btn rounded-circle" data-bs-toggle="dropdown"
-          aria-expanded="false" href="#" role="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-            class="icon icon-tabler icons-tabler-outline icon-tabler-bell">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
-            <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
-          </svg>
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger mt-2 ms-n2">
-            2
-            <span class="visually-hidden">unread messages</span>
-          </span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-0">
-          <ul class="list-unstyled p-0 m-0">
-            <li class="p-3 border-bottom">
-              <div class="d-flex gap-3">
-                <img src="{{ asset('assets/images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-sm rounded-circle" />
-                <div class="flex-grow-1 small">
-                  <p class="mb-0">New order received</p>
-                  <p class="mb-1">Order #12345 has been placed</p>
-                  <div class="text-secondary">5 minutes ago</div>
-                </div>
-              </div>
-            </li>
-            <li class="p-3 border-bottom">
-              <div class="d-flex gap-3">
-                <img src="{{ asset('assets/images/avatar/avatar-4.jpg') }}" alt="" class="avatar avatar-sm rounded-circle" />
-                <div class="flex-grow-1 small">
-                  <p class="mb-0">New user registered</p>
-                  <p class="mb-1">User @john_doe has signed up</p>
-                  <div class="text-secondary">30 minutes ago</div>
-                </div>
-              </div>
-            </li>
 
-            <li class="p-3 border-bottom">
-              <div class="d-flex gap-3">
-                <img src="{{ asset('assets/images/avatar/avatar-2.jpg') }}" alt="" class="avatar avatar-sm rounded-circle" />
-                <div class="flex-grow-1 small">
-                  <p class="mb-0">Payment confirmed</p>
-                  <p class="mb-1">Payment of $299 has been received</p>
-                  <div class="text-secondary">1 hour ago</div>
-                </div>
-              </div>
-            </li>
-            <li class="px-4 py-3 text-center">
-              <a href="#" class="text-primary">View all notifications</a>
-            </li>
-          </ul>
-        </div>
-      </li>
-      <!-- Dropdown -->
-      <li class="ms-3 dropdown">
-        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="{{ asset('assets/images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-sm rounded-circle" />
+  <div class="ms-auto">
+    <!-- Navbar nav -->
+    <ul class="list-unstyled d-flex align-items-center mb-0 gap-2">
+      <!-- Profile Dropdown -->
+      <li class="dropdown">
+        <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="{{ $userAvatar }}" alt="Profile" class="avatar avatar-sm rounded-circle border" style="width: 36px; height: 36px; object-fit: cover;" />
+          <span class="fw-semibold text-dark d-none d-md-inline-block">{{ $user->name ?? 'User' }}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-end p-0" style="min-width: 200px;">
+        <div class="dropdown-menu dropdown-menu-end shadow-sm border-0 p-0 mt-2" style="min-width: 220px;">
           <div>
-            <div class="d-flex gap-3 align-items-center border-dashed border-bottom px-3 py-3">
-              <img src="{{ asset('assets/images/avatar/avatar-1.jpg') }}" alt="" class="avatar avatar-md rounded-circle" />
+            <div class="d-flex gap-3 align-items-center border-bottom px-3 py-3 bg-light rounded-top">
+              <img src="{{ $userAvatar }}" alt="" class="avatar avatar-md rounded-circle border" style="width: 42px; height: 42px; object-fit: cover;" />
               <div>
-                <h4 class="mb-0 small">{{ auth()->user()->name ?? 'Shrina Tesla' }}</h4>
-                <p class="mb-0 small">{{ '@' . (auth()->user()->username ?? 'imshrina') }}</p>
+                <h6 class="mb-0 fw-bold text-dark">{{ $user->name ?? 'Guest User' }}</h6>
+                <small class="text-muted d-block">{{ '@' . ($user->username ?? 'user') }}</small>
+                @if($user && $user->roles->count())
+                  <span class="badge bg-primary-subtle text-primary mt-1">{{ ucfirst($user->roles->first()->name) }}</span>
+                @endif
               </div>
             </div>
-            <div class="p-3 d-flex flex-column gap-1 small lh-lg">
-              <a href="{{ route('dashboard') }}"><span>Home</span></a>
-              <a href="#!"><span>Inbox</span></a>
-              <a href="#!"><span>Chat</span></a>
-              <a href="#!"><span>Activity</span></a>
-              <a href="#!"><span>Account Settings</span></a>
+            <div class="p-2 d-flex flex-column gap-1 small">
+              <a href="{{ route('dashboard') }}" class="dropdown-item py-2 rounded">
+                <i class="ti ti-home me-2"></i> Dashboard
+              </a>
+              @can('setting-list')
+                <a href="{{ route('settings.index') }}" class="dropdown-item py-2 rounded">
+                  <i class="ti ti-settings me-2"></i> App Settings
+                </a>
+              @endcan
               @auth
-                <form method="POST" action="{{ route('auth.logout') }}" class="mt-2 pt-2 border-top">
+                <div class="dropdown-divider my-1"></div>
+                <form method="POST" action="{{ route('auth.logout') }}">
                   @csrf
-                  <button type="submit" class="btn btn-link link-danger p-0 text-decoration-none small">Log out</button>
+                  <button type="submit" class="dropdown-item py-2 rounded text-danger fw-semibold">
+                    <i class="ti ti-logout me-2"></i> Log Out
+                  </button>
                 </form>
               @endauth
             </div>

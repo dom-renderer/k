@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Users - InApp Inventory Dashboard')
+@section('title', 'Users - ' . \App\Models\Setting::get('app_title', 'InApp Inventory Dashboard'))
 
 @section('content')
 <div class="row">
@@ -8,11 +8,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h1 class="fs-3 mb-1">Users</h1>
-        <p class="mb-0">Manage system users and authorization</p>
+        <p class="mb-0 text-muted">Manage system users and role permissions</p>
       </div>
       @can('user-create')
       <div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">Add User</a>
+        <a href="{{ route('users.create') }}" class="btn btn-primary">
+          <i class="ti ti-plus me-1"></i> Add User
+        </a>
       </div>
       @endcan
     </div>
@@ -25,6 +27,43 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 @endif
+
+<!-- Filter Accordion (Default Collapsed) -->
+<div class="accordion mb-4" id="usersFilterAccordion">
+  <div class="accordion-item border shadow-sm">
+    <h2 class="accordion-header" id="headingUsersFilter">
+      <button class="accordion-button collapsed fw-semibold text-dark bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsersFilter" aria-expanded="false" aria-controls="collapseUsersFilter">
+        <i class="ti ti-filter me-2 text-primary"></i> Filter Users
+      </button>
+    </h2>
+    <div id="collapseUsersFilter" class="accordion-collapse collapse" aria-labelledby="headingUsersFilter" data-bs-parent="#usersFilterAccordion">
+      <div class="accordion-body p-4 bg-white">
+        <form id="userFilterForm">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="filter_role" class="form-label fw-semibold small">Filter by Role</label>
+              <select class="form-select form-select-sm" id="filter_role" name="role">
+                <option value="">All Roles</option>
+                @foreach($roles as $role)
+                  <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
+                @endforeach
+              </select>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+              <button type="button" class="btn btn-sm btn-light" id="resetUserFilterBtn">
+                <i class="ti ti-rotate-clockwise me-1"></i> Reset
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="applyUserFilterBtn">
+                <i class="ti ti-filter me-1"></i> Apply Filter
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="row">
   <div class="col-12">
@@ -54,7 +93,12 @@ $(document).ready(function() {
   var table = $('#users-table').DataTable({
     processing: true,
     serverSide: true,
-    ajax: "{{ route('users.index') }}",
+    ajax: {
+      url: "{{ route('users.index') }}",
+      data: function(d) {
+        d.role = $('#filter_role').val();
+      }
+    },
     columns: [
       { data: 'name', name: 'first_name' },
       { data: 'username', name: 'username' },
@@ -67,6 +111,15 @@ $(document).ready(function() {
       search: "_INPUT_",
       searchPlaceholder: "Search users..."
     }
+  });
+
+  $('#applyUserFilterBtn').on('click', function() {
+    table.ajax.reload();
+  });
+
+  $('#resetUserFilterBtn').on('click', function() {
+    $('#userFilterForm')[0].reset();
+    table.ajax.reload();
   });
 
   // Delete User Handler
