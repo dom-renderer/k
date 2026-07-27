@@ -11,6 +11,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(PermissionSeeder::class);
+        $this->call([
+            PermissionSeeder::class,
+            CountriesTableSeeder::class,
+            StatesTableSeeder::class,
+            CitiesTableChunkOneSeeder::class,
+            CitiesTableChunkTwoSeeder::class,
+            CitiesTableChunkThreeSeeder::class,
+            CitiesTableChunkFourSeeder::class,
+            CitiesTableChunkFiveSeeder::class,
+        ]);
     }
 }
