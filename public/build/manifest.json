@@ -1,0 +1,33 @@
+{
+  "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.ttf": {
+    "file": "assets/tabler-icons-DMRaotGC.ttf",
+    "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.ttf"
+  },
+  "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff": {
+    "file": "assets/tabler-icons-BWE4Tlyy.woff",
+    "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff"
+  },
+  "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2": {
+    "file": "assets/tabler-icons-DnZiL_sy.woff2",
+    "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
+  },
+  "resources/js/main.js": {
+    "file": "assets/main-DSrcXYko.js",
+    "name": "main",
+    "src": "resources/js/main.js",
+    "isEntry": true,
+    "css": [
+      "assets/style-QMkfvk29.css"
+    ],
+    "assets": [
+      "assets/tabler-icons-DnZiL_sy.woff2",
+      "assets/tabler-icons-BWE4Tlyy.woff",
+      "assets/tabler-icons-DMRaotGC.ttf"
+    ]
+  },
+  "resources/scss/style.scss": {
+    "file": "assets/style-QMkfvk29.css",
+    "src": "resources/scss/style.scss",
+    "isEntry": true
+  }
+}
