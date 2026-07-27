@@ -21,6 +21,7 @@ Homestead.json
 Homestead.yaml
 /.idea
 /.vscode
+composer.lock
 
 
 # Runtime data
