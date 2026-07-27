@@ -1347,5 +1347,14 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'yajra/laravel-datatables-oracle' => array(
+            'pretty_version' => 'v13.1.5',
+            'version' => '13.1.5.0',
+            'reference' => '299c07a7dae380e565bd328104965b6e02286c2f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../yajra/laravel-datatables-oracle',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
     ),
 );

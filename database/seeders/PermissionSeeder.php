@@ -18,38 +18,49 @@ class PermissionSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create Permissions for User management
-        $permissions = [
-            'user-list',
-            'user-create',
-            'user-edit',
-            'user-delete',
+        // System permissions grouped by module
+        $permissionGroups = [
+            'User Management' => [
+                'user-list',
+                'user-create',
+                'user-edit',
+                'user-delete',
+            ],
+            'Role Management' => [
+                'role-list',
+                'role-create',
+                'role-edit',
+                'role-delete',
+            ],
+            'Inventory Management' => [
+                'inventory-list',
+                'inventory-create',
+                'inventory-edit',
+                'inventory-delete',
+            ],
+            'Reports' => [
+                'report-list',
+                'report-export',
+            ],
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        foreach ($permissionGroups as $group => $permissions) {
+            foreach ($permissions as $permissionName) {
+                Permission::firstOrCreate(['name' => $permissionName]);
+            }
         }
 
-        // Create Roles and assign created permissions
+        // Create Roles and assign permissions
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->syncPermissions(Permission::all());
 
         $userRole = Role::firstOrCreate(['name' => 'user']);
-        $userRole->syncPermissions(['user-list']);
+        $userRole->syncPermissions(['user-list', 'inventory-list', 'report-list']);
 
-        // Create Default Admin User if not exists
-        $adminUser = User::firstOrCreate(
-            ['username' => 'admin'],
-            [
-                'first_name' => 'Admin',
-                'last_name' => 'User',
-                'email' => 'admin@example.com',
-                'phone_number' => '+12025550143',
-                'gender' => 'male',
-                'password' => bcrypt('password'),
-            ]
-        );
-
-        $adminUser->assignRole($adminRole);
+        // Assign Admin role to default admin user
+        $adminUser = User::where('username', 'admin')->first();
+        if ($adminUser) {
+            $adminUser->assignRole($adminRole);
+        }
     }
 }

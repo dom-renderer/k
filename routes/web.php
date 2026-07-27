@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -18,6 +19,7 @@ Route::post('/products', [ProductController::class, 'store'])->name('products.st
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 Route::resource('users', UserController::class);
+Route::resource('roles', RoleController::class);
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login.submit');

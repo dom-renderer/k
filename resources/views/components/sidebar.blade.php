@@ -24,6 +24,11 @@
       </a>
     </li>
     <li>
+      <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+        <i class="ti ti-shield"></i><span class="nav-text">Roles</span>
+      </a>
+    </li>
+    <li>
       <a class="nav-link {{ request()->routeIs('products.create') ? 'active' : '' }}" href="{{ route('products.create') }}">
         <i class="ti ti-plus"></i><span class="nav-text">Add Product</span>
       </a>

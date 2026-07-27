@@ -7,77 +7,34 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the users or handle DataTables AJAX request.
+     * Display a listing of the users or handle DataTables AJAX request using Yajra DataTables.
      */
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = User::with('roles');
+            $query = User::with('roles')->select('users.*');
 
-            // Search filter
-            $searchValue = $request->input('search.value');
-            if (!empty($searchValue)) {
-                $query->where(function ($q) use ($searchValue) {
-                    $q->where('first_name', 'like', "%{$searchValue}%")
-                      ->orWhere('last_name', 'like', "%{$searchValue}%")
-                      ->orWhere('username', 'like', "%{$searchValue}%")
-                      ->orWhere('email', 'like', "%{$searchValue}%")
-                      ->orWhere('phone_number', 'like', "%{$searchValue}%");
-                });
-            }
-
-            $totalRecords = User::count();
-            $filteredRecords = $query->count();
-
-            // Order
-            $orderColumnIndex = $request->input('order.0.column', 0);
-            $orderDirection = $request->input('order.0.dir', 'asc');
-
-            $columns = ['id', 'first_name', 'username', 'email', 'phone_number', 'created_at'];
-            $orderBy = $columns[$orderColumnIndex] ?? 'id';
-            $query->orderBy($orderBy, $orderDirection);
-
-            // Pagination
-            $start = (int) $request->input('start', 0);
-            $length = (int) $request->input('length', 10);
-            if ($length > 0) {
-                $query->skip($start)->take($length);
-            }
-
-            $users = $query->get();
-
-            $data = $users->map(function ($user) {
-                $rolesBadges = $user->roles->map(function ($role) {
-                    $badgeClass = $role->name === 'admin' ? 'bg-danger' : 'bg-primary';
-                    return '<span class="badge ' . $badgeClass . '">' . e(ucfirst($role->name)) . '</span>';
-                })->implode(' ');
-
-                $userHtml = '<a href="#!"><img src="' . e($user->avatar_url) . '" class="avatar avatar-md rounded-circle me-2" alt="" /><span class="ms-1 fw-semibold">' . e($user->name) . '</span></a>';
-
-                $actionsHtml = '<a href="' . route('users.edit', $user->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>
-                    <a href="javascript:void(0)" class="link-danger delete-user-btn ms-2" data-id="' . $user->id . '" data-name="' . e($user->name) . '"><i class="ti ti-trash fs-5"></i></a>';
-
-                return [
-                    'id' => $user->id,
-                    'name' => $userHtml,
-                    'username' => e($user->username),
-                    'email' => e($user->email),
-                    'phone_number' => e($user->phone_number),
-                    'roles' => $rolesBadges,
-                    'actions' => $actionsHtml,
-                ];
-            });
-
-            return response()->json([
-                'draw' => (int) $request->input('draw', 1),
-                'recordsTotal' => $totalRecords,
-                'recordsFiltered' => $filteredRecords,
-                'data' => $data,
-            ]);
+            return DataTables::of($query)
+                ->addColumn('name', function ($user) {
+                    return '<a href="#!"><img src="' . e($user->avatar_url) . '" class="avatar avatar-md rounded-circle me-2" alt="" /><span class="ms-1 fw-semibold">' . e($user->name) . '</span></a>';
+                })
+                ->addColumn('roles', function ($user) {
+                    return $user->roles->map(function ($role) {
+                        $badgeClass = $role->name === 'admin' ? 'bg-danger' : 'bg-primary';
+                        return '<span class="badge ' . $badgeClass . '">' . e(ucfirst($role->name)) . '</span>';
+                    })->implode(' ');
+                })
+                ->addColumn('actions', function ($user) {
+                    return '<a href="' . route('users.edit', $user->id) . '" class="text-body"><i class="ti ti-edit fs-5"></i></a>
+                        <a href="javascript:void(0)" class="link-danger delete-user-btn ms-2" data-id="' . $user->id . '" data-name="' . e($user->name) . '"><i class="ti ti-trash fs-5"></i></a>';
+                })
+                ->rawColumns(['name', 'roles', 'actions'])
+                ->make(true);
         }
 
         return view('users.index');
